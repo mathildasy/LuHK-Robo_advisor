@@ -37,38 +37,17 @@ week = {'CUAM China-Hong Kong Strategy A' : 5,\
 
 # 画图函数
 def plot(nav, pct_change, name):
-    #global g_label_added
-    #count += 1              
-    #ax = fig.add_subplot(23, 2, count)
+    global g_label_added
     plt.plot(nav, color='red', label='NAV',linestyle=':')
-    
-    #ax2 = plt.subplot(222)
     plt.plot(pct_change, color='#F08080', label='Monthly Return',linestyle='-')
-
     plt.xlabel('Time')
     plt.ylabel('Monthly Return / NAV')
     plt.title(name)
-    #if not g_label_added:
-    plt.legend(loc = 0, ncol = 2)
-    #    g_label_added = True
+    if not g_label_added:
+        plt.legend(loc = 0, ncol = 2)
+        g_label_added = True
     plt.savefig('pic/'+name+'.png')
     #plt.show()
-
-#def tran_time_form(name):
-#     book = xlrd.open_workbook('fund_data.xlsx')
-#     sheet = book.sheet_by_name(name)
-#     for row in range(sheet.nrows):
-#        col = 0
-#        value = sheet.cell(row, col).value
-#        if sheet.cell(row, col).ctype == 3:
-#            date = xldate_as_tuple(sheet.cell(row, col).value, 0)
-#            print(date)
-#            value = datetime(*date)
-#            print(value)
-
-#tran_time_form('CUAM China-Hong Kong Strategy A')
-#df = pd.read_excel('fund_data.xlsx')
-#fund_names = df.parse(sheet_name)
 
 # 得到Excel Sheet名称
 def get_names(excelName):
@@ -87,6 +66,8 @@ def get_return(excelName,period = 30):
     for i in range(1,len(fund_names)):
         name = fund_names[i]
         fund = pd.read_excel(excelName, sheet_name = i)
+        print('----No.'+str(i)+' Fund----')
+        print()
         print(fund.head()) #查看前五个
 
         # 做些微调
@@ -96,24 +77,29 @@ def get_return(excelName,period = 30):
             pct_change.append(np.nan)
             nav.append(np.nan)
 
+        # 从数据初始值加上期限的那天，开始计算收益
         date = week[name]+period
-        date %= 7
-        for i in range(0,fund.shape[0]-period):
-            change = fund.iloc[i + period,1] - fund.iloc[i,1]
+        date %= 7 # 保存星期几
+        for i in range(0,fund.shape[0]-period): # 考虑change of price的初始天
+            change = fund.iloc[i + period,1] - fund.iloc[i,1] 
             if date in WEEKENDS:
                 date += 1
                 date %= 7
                 continue
-            pct_change.append(100.0 * change / fund.iloc[i,1])
+            pct_change.append(100.0 * change / fund.iloc[i,1]) #记录基金收益率的时序
             nav.append(fund.iloc[i + period,1])
             date += 1
             date %= 7
-            
-            fund_return[name] = pd.Series(pct_change[::-1])
-    
+
+        # 存储每个基金的收益率
+        fund_return[name] = pd.Series(pct_change[::-1])
+
+        # 画montly图
+        if period == 3:
+            plot(nav, pct_change, name)
+        
     return pd.DataFrame(fund_return)
 
-        #plot(nav, pct_change, name)
 
 if __name__ == "__main__":
     periodList = [1,7,14,30, 61, 91, 182, 365] # monthly

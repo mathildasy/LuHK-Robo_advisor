@@ -46,67 +46,7 @@ Since the data of the last two terms are difficult to mock, and our method mainl
 
 ### 2.1.2 Dimension Design
 
-To determine which set of dimensions to select as our data, we design a questionnaire. It mainly covers detailed demographic information, financial situation and risky choices. The questionnaire is attached in the following lines:
-
-01、Name
-02、Gender
-	A、Male
-	B、Female
-03、Hometown/Country
-04、Age	
-	A、<18
-	B、19——25
-	C、26——51
-	D、51——64
-	E、>64
-05、Educational Level	
-	A、Junior high school and below
-	B、Senior high
-	C、Junior college
-	D、Undergraduate
-	E、Master and above
-06、Income (HKD/year)	
-	A、<5w
-	B、5——20w
-	C、21——50w
-	D、51——100w
-	E、>100w
-07、Investing Experience (1——5、no——rich)	
-	A、1
-	B、2
-	C、3
-	D、4
-	E、5
-08、Longest Acceptable Investing Period	
-	A、<1y
-	B、1——3y
-	C、3——8y
-	D、>8y
-	E、No Specific Requirement
-09、Maximum Acceptable Drawdown	
-	A、<1%
-	B、<5%
-	C、<10%
-	D、<40%
-	E、>40%
-10、Debt Situation	
-	A、Absolutely no
-	B、Only small amount
-	C、Short-term credit debts (e.g. credit card installment and consumer credit)
-	D、Long-term debts (e.g. mortgages and car loans)
-	E、Other Personal Debts
-11、Risk Preference (prefer which kind of uncertain return)	
-	A、100% * 1k
-	B、50% * 5w
-	C、25% * 50w
-	D、10% * 100w
-	E、5% * 500w
-12、Investing Attitude	
-	A、Do not expect any investing risk
-	B、Strongly risk averse, expect secure principal, regardless of low return rate
-	C、Relatively conservative, but willing to take small amount of risk
-	D、Risk-taking, willing to take some loss in principal
-	E、Expect high return and growth rate, willing to take great loss in principal
+To determine which set of dimensions to select as our data, we design a questionnaire. It mainly covers detailed demographic information, financial situation and risky choices. The questionnaire is attached in the  `questionnaire.txt`.
 
 They can be simply represented by the following list, each of them corresponds to a word or a number between 1 and 5:
 Name, Gender, Hometown, Age, Education, Income, Experience, Period, Drawdown, Debt, Risk, Attitude.

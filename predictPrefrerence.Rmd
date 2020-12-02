@@ -1,0 +1,153 @@
+---
+title: "预测用户偏好"
+author: "Sun Yan"
+date: "11/30/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(caret)
+```
+
+```{r}
+# read data
+data <- read.csv('customerData.csv')
+
+# split the dataset into two parts
+set.seed(1)
+trainIndex <- createDataPartition(data$attitude, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+#head(trainIndex)
+#train = sample(1:nrow(data), nrow(data)*2/3)
+#test = (-train)
+#data.train <- data[train,]
+#colSums(is.na(data.train))
+attitude.f <- as.factor(data$attitude)
+data <- data.frame(data,attitude.f)
+customTrain <- data[trainIndex,]
+customTest <- data[-trainIndex,]
+```
+
+```{r}
+# hometown
+boxplot(attitude~hometown, data= customTrain)
+unique_x <- unique(customTrain$hometown)
+unique_x #数据集中有哪些地区
+```
+
+```{r}
+mod.hometown <- function(data){
+  invalid <- c() # 无效行
+  for (i in 1:nrow(data)){
+    city = data$hometown[i]
+    if (city=='hk'){data$hometown[i] = 'HongKong'}
+    if (city=='Hk'){data$hometown[i] = 'HongKong'}
+    if (city=='HK'){data$hometown[i] = 'HongKong'}
+    if (city=='Hong Kong'){data$hometown[i] = 'HongKong'}
+    if (city=='shenzhen'){data$hometown[i] = 'Shenzhen'}
+    if (city=='china'){
+      data$hometown[i] = 'China'
+      invalid <- c(invalid, i)}
+    if (city=='China'){invalid <- c(invalid, i)}
+    if (city=='Chinese mainland'){
+      data$hometown[i] = 'China'
+      invalid <- c(invalid, i)}
+  }
+  return(data)
+}
+
+customTrain = mod.hometown(customTrain)
+```
+
+```{r}
+# 出现频次
+x <- ifelse(customTrain$hometown=='Chinese mainland',1,0)
+sum(x)
+```
+
+```{r}
+# hometown
+boxplot(attitude~hometown, data= customTrain)
+unique_x <- unique(customTrain$hometown)
+unique_x #数据集中有哪些地区
+```
+
+
+```{r}
+library(tree)
+tree.fit <- tree(attitude.f~.-attitude, data = customTrain[,-c(1,2)])
+summary(tree.fit)
+plot(tree.fit)
+text(tree.fit, cex=.6,font=2,pretty=0)
+```
+
+```{r}
+# hometown
+boxplot(attitude~hometown, data= customTest)
+unique_x <- unique(customTest$hometown)
+unique_x #数据集中有哪些地区
+```
+
+```{r}
+# 调整地区名称
+customTest = mod.hometown(customTest)
+```
+
+```{r}
+# 出现频次
+x <- ifelse(customTrain$hometown=='Chinese mainland',1,0)
+sum(x)
+```
+
+```{r}
+# hometown
+boxplot(attitude~hometown, data= customTest)
+unique_x <- unique(customTest$hometown)
+unique_x #数据集中有哪些地区
+```
+
+```{r}
+tree.pred = predict(tree.fit, customTest, type='class')
+table(tree.pred, customTest$attitude.f)
+sum(tree.pred == customTest$attitude.f)/length(tree.pred)
+```
+
+```{r, warning=F}
+set.seed(20)
+cv.customer <- cv.tree(tree.fit, FUN = prune.misclass)
+par(mfrow = c(1,2))
+optimal.size <- cv.customer$size[which.min(cv.customer$dev)]
+plot(cv.customer$size, cv.customer$dev,  type = 'b')
+plot(cv.customer$k, cv.customer$dev, type = 'b')
+```
+
+```{r}
+prune.customer <- prune.misclass(tree.fit, best = optimal.size)
+par(mfrow = c(1,1))
+plot(prune.customer)
+text(prune.customer, pretty=0)
+```
+
+```{r}
+tree.pred.2 = predict(prune.customer, customTest, type='class')
+table(tree.pred.2, customTest$attitude.f)
+sum(tree.pred == customTest$attitude.f)/length(tree.pred)
+```
+
+
+```{r}
+
+
+
+
+```
+
+
+
+

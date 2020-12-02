@@ -1,41 +1,31 @@
 import numpy as np
 import pandas as pd
-#import yfinance as yf
 
-#yf.pdr_override()                   
-#pd.options.display.float_format = '{:.4%}'.format
+R = dict()
+SharpeRatio = dict()
+PERIOD = {1:'on', 7:'1w', 14:'2w', 30:'1m', 61:'2m', 91:'3m', 182:'6m', 365:'12m'}
 
-# Date range
-#start = '2016-01-01'
-#end = '2019-12-30'
+# 计算夏普比率
+def get_Sharpe(R, rf):
+    premium = R.sub(rf, axis = 0)
+    #print(premium.head())
+    return_mean = premium.mean(0)
+    #print(return_mean.head())
+    risk_std = premium.std()
+    #print(risk_std.head())
+    sharpe_ratio = return_mean / risk_std
 
-# Tickers of assets
-#assets = ['JCI', 'TGT', 'CMCSA', 'CPB', 'MO', 'NBL', 'APA', 'MMC', 'JPM',
-#         'ZION', 'PSA', 'AGN', 'BAX', 'BMY', 'LUV', 'PCAR', 'TXT', 'DHR',
-#          'DE', 'MSFT', 'HPQ', 'SEE', 'VZ', 'CNP', 'NI']
-#assets.sort()
-
-# Downloading data
-#data = yf.download(assets, start = start, end = end)
-#data = data.loc[:,('Adj Close', slice(None))]
-#data.columns = assets
-
-# Calculating returns
-
-R = pd.read_csv('return/1mreturn.csv')
-
-#print(Y.head())
+    return sharpe_ratio
 
 # 读取Rf
-rf = pd.read_excel('hkrf.xlsx')['1m']
+rf = pd.read_excel('hkrf.xlsx')
 
-#print(rf.head())
-
-premium = R.sub(rf, axis = 0).dropna()
-
-print(premium)
-
-#import riskfolio.Portfolio as pf
+# 读取23只基金的收益率
+periodList = [1,7,14,30, 61, 91, 182, 365] 
+for period in periodList:
+    R[period] = pd.read_csv('return/'+PERIOD[period]+'return.csv')
+    SharpeRatio[period] = get_Sharpe(R[period], rf[PERIOD[period]])
 
 
-#port = pf.Portfolio(returns=Y)
+
+

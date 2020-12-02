@@ -38,7 +38,7 @@ week = {'CUAM China-Hong Kong Strategy A' : 5,\
 # 画图函数
 def plot(nav, pct_change, name):
     global g_label_added
-    plt.plot(nav, color='red', label='NAV',linestyle=':')
+    #plt.plot(nav, color='red', label='NAV',linestyle=':')
     plt.plot(pct_change, color='#F08080', label='Monthly Return',linestyle='-')
     plt.xlabel('Time')
     plt.ylabel('Monthly Return / NAV')
@@ -95,18 +95,18 @@ def get_return(excelName,period = 30):
         fund_return[name] = pd.Series(pct_change[::-1])
 
         # 画montly图
-        if period == 3:
+        if period == 30:
             plot(nav, pct_change, name)
         
-    return pd.DataFrame(fund_return)
+    #return pd.DataFrame(fund_return)
 
 
 if __name__ == "__main__":
     periodList = [1,7,14,30, 61, 91, 182, 365] # monthly
-    for period in periodList:
-        fund_return = get_return('fund_data.xlsx', period)
-        fund_return.to_csv('return/'+PERIOD[period]+'return.csv',index=False)
-
+    #for period in periodList:
+    #    fund_return = get_return('fund_data.xlsx', period)
+    #    fund_return.to_csv('return/'+PERIOD[period]+'return.csv',index=False)
+    get_return('fund_data.xlsx')
 
 
 
